@@ -7,7 +7,7 @@ class PostlistSerializer (serializers.ModelSerializer):
     # owner = serializers.SerializerMethodField()
     
     # def get_owner(self, obj):
-        # return obj.owner.email
+    #     return obj.owner.email
     
     class Meta:
         model = Post
