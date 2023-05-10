@@ -58,3 +58,13 @@ class PostDetailView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response("작성자만 삭제할 수 있습니다.", status=status.HTTP_403_FORBIDDEN)
+        
+class LikeView(APIView):
+    def post(self, request, post_id):
+        posts = get_object_or_404(Post, id=post_id)
+        if request.user in posts.likes.all():
+            posts.likes.remove(request.user)
+            return Response("좋아요를 취소했습니다.", status=status.HTTP_200_OK)
+        else:
+            posts.likes.add(request.user)
+            return Response("좋아요를 했습니다.", status=status.HTTP_200_OK)
