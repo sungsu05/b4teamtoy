@@ -29,7 +29,7 @@ class PostView(APIView):
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# 게시글 상세보기, 수정, 삭제 뷰(get, put, delete) - 본인만 가능
+# 게시글 상세보기, 수정, 삭제 뷰(get, put, delete) - get 빼고 본인만 가능
 class PostDetailView(APIView):
     def get(self, request, post_id):
         '''특정 게시글 조회'''
