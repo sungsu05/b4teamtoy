@@ -5,18 +5,18 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 class UserManager(BaseUserManager):
     def create_user(self,email,username,nickname,is_seller,password=None):
-        is_seller = is_seller.upper()
 
         if not username:
             raise ValueError('사용자 이름은 필수 입력 사항 입니다.')
         elif not password:
             raise ValueError('사용자 비밀번호는 필수 입력 사항 입니다.')
-        # elif not nickname:
-        #     raise ValueError('사용자 별명은 필수 입력 사항 입니다.')
-        # elif not email:
-        #     raise ValueError('사용자 이메일은 필수 입력 사항 입니다.')
-        # elif is_seller == None:
-        #     raise ValueError('사용자 판매/일반 회원 여부는 필수 선택 사항 입니다.')
+        elif not nickname:
+            raise ValueError('사용자 별명은 필수 입력 사항 입니다.')
+        elif not email:
+            raise ValueError('사용자 이메일은 필수 입력 사항 입니다.')
+        elif is_seller == None:
+            raise ValueError('사용자 판매/일반 회원 여부는 필수 선택 사항 입니다.')
+
         user = self.model(
             email=self.normalize_email(email),
             username=username,
@@ -51,12 +51,15 @@ class User(AbstractBaseUser):
     signout_at = models.DateTimeField("탈퇴일", auto_now_add=True)
     follow = models.ManyToManyField('self',symmetrical=False,related_name='followers',blank=True)
 
-    SELLER_CHOICE =(
-        # seller or  member
-        ('S','판매 회원'),  # 판매 회원
-        ('M','일반 회원'), # 일반 회원
-    )
-    is_seller = models.CharField(max_length=10,choices=SELLER_CHOICE)
+    # SELLER_CHOICE =(
+    #     # seller or  member
+    #     ('S','판매 회원'),  # 판매 회원
+    #     ('M','일반 회원'), # 일반 회원
+    #     ('S', True),  # 판매 회원
+    #     ('M', False),  # 일반 회원
+    # )
+    # BooleanField에는 CHOICE를 선택하는것은 올바른 방법이 아니다.
+    is_seller = models.BooleanField(default=True)
 
     # is_staff에서 해당 값 사용
     is_active = models.BooleanField(default=True)
@@ -92,3 +95,9 @@ class User(AbstractBaseUser):
     # @property
     # def is_selleruser(self):
     #     return self.is_seller
+
+
+
+
+
+
