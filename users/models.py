@@ -3,23 +3,38 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 # custom user model 사용 시 UserManager 클래스와 create_user, create_superuser 함수가 정의되어 있어야 함
 
-
 class UserManager(BaseUserManager):
-    def create_user(self, username, password=None):
+    def create_user(self,email,username,nickname,is_seller,password=None):
+        is_seller = is_seller.upper()
+
         if not username:
-            raise ValueError('Users must have an username')
+            raise ValueError('사용자 이름은 필수 입력 사항 입니다.')
+        elif not password:
+            raise ValueError('사용자 비밀번호는 필수 입력 사항 입니다.')
+        # elif not nickname:
+        #     raise ValueError('사용자 별명은 필수 입력 사항 입니다.')
+        # elif not email:
+        #     raise ValueError('사용자 이메일은 필수 입력 사항 입니다.')
+        # elif is_seller == None:
+        #     raise ValueError('사용자 판매/일반 회원 여부는 필수 선택 사항 입니다.')
         user = self.model(
+            email=self.normalize_email(email),
             username=username,
+            nickname=nickname,
+            is_seller=is_seller,
         )
         user.set_password(password)
         user.save(using=self._db)
         return user
 
     # python manage.py createsuperuser 사용 시 해당 함수가 사용됨
-    def create_superuser(self, username, password=None):
+    def create_superuser(self,email,username,nickname,is_seller,password=None):
         user = self.create_user(
+            email,
+            password=password,
             username=username,
-            password=password
+            nickname=nickname,
+            is_seller=is_seller,
         )
         user.is_admin = True
         user.save(using=self._db)
@@ -27,29 +42,33 @@ class UserManager(BaseUserManager):
 
 # name, password, nickname, email, follow, created_at, updated_at, signout_at, is_active, is_seller
 class User(AbstractBaseUser):
-    username = models.CharField("사용자 계정", max_length=20, unique=True)
-    password = models.CharField("비밀번호", max_length=128)
-    nickname = models.CharField("닉네임", max_length=20)
-    email = models.EmailField("이메일 주소", max_length=100)
-    # follow = models.ManyToManyField()
+    username = models.CharField("사용자 이름", max_length=20)
+    password = models.CharField("비밀번호", max_length=128) # max?
+    nickname = models.CharField("닉네임", max_length=20,unique = True)
+    email = models.EmailField("이메일 주소", max_length=100,unique = True)
     created_at = models.DateTimeField("가입일", auto_now_add=True)
     updated_at = models.DateTimeField("수정일", auto_now=True)
-    # signout_at = models.DateTimeField("탈퇴일", default=None)
-    
-    # is_active가 False일 경우 계정이 비활성화됨
-    is_active = models.BooleanField(default=True)
-    # is_active = models.BooleanField(default=False)
-    
+    signout_at = models.DateTimeField("탈퇴일", auto_now_add=True)
+    follow = models.ManyToManyField('self',symmetrical=False,related_name='followers',blank=True)
+
+    SELLER_CHOICE =(
+        # seller or  member
+        ('S','판매 회원'),  # 판매 회원
+        ('M','일반 회원'), # 일반 회원
+    )
+    is_seller = models.CharField(max_length=10,choices=SELLER_CHOICE)
+
     # is_staff에서 해당 값 사용
+    is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
 
     # id로 사용 할 필드 지정.
-    # 로그인 시 USERNAME_FIELD에 설정 된 필드와 password가 사용된다.
-    USERNAME_FIELD = 'username'
+    # 로그인 시 USERNAME_FIELD에 설정 된 필드와 password가 사용된다.\
+    USERNAME_FIELD = 'nickname'
+    # USERNAME_FIELD = 'username'
 
     # user를 생성할 때 입력받은 필드 지정
-    REQUIRED_FIELDS = []
-
+    REQUIRED_FIELDS = ['username','email','is_seller']
     objects = UserManager()  # custom user 생성 시 필요
 
     def __str__(self):
