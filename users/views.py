@@ -1,29 +1,26 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
-from django.contrib.auth import authenticate, login, logout
+from rest_framework import status, permissions
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView
+from users.serializers import CustomTokenObtainPairSerializer, UserSerializer
 from users.models import User
-from users.serializers import UserSerializer
 
-# for Postman testing
+
 class UserView(APIView):
     def get(self, request):
-        """ 사용자 정보 return """
         user = request.user
-        return Response(UserSerializer(user.data))
+        serialized_user_data = UserSerializer(user).data
+        return Response(serialized_user_data, status=status.HTTP_200_OK)
     
     def post(self, request):
-        """ 회원가입 """
-        
-        # User.objects.create(**request.data)
-        serializer = UserSerializer(data=request.data)
-        
-        if not serializer.is_valid():
-            return Response({"error": serializer.errors}, status=400)
-        serializer.save()
-        
-        return Response({"message": "user post"})
-    
+        """ 사용자 정보 등록 """
+        serialized_user = UserSerializer(request.data)
+        if serialized_user.is_valid():
+            serialized_user.save()
+            return Response({"message": "가입완료"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"message": f"${serialized_user.errors}"}, status=status.HTTP_400_BAD_REQUEST)
+      
     def put(self, request):
         """ 사용자 정보 수정 """
         return Response({"message": "user put"})
@@ -32,11 +29,5 @@ class UserView(APIView):
         """ 회원 탈퇴 """
         return Response({"message": "user delete"})
     
-class UserLoginView(APIView):
-    def post(self, request):
-        user = authenticate(request, **request.data)
-        if not user:
-            return Response({"error": "유효하지 않은 계정"})
-        
-        login(request, user)
-        return Response({"message": "로그인 성공"})
+class CustomTokenObtainPairView(TokenObtainPairView, TokenVerifyView):
+    serializer_class = CustomTokenObtainPairSerializer
