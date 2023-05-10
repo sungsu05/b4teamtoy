@@ -3,11 +3,10 @@ from posts.models import Post
 
 '''메인에 가져오는 시리얼라이저 -> 작성자, 타이틀, 이미지만 가져옴'''
 class PostlistSerializer (serializers.ModelSerializer):
-    # 아직 외래키가 없음
-    # owner = serializers.SerializerMethodField()
+    owner = serializers.SerializerMethodField()
     
-    # def get_owner(self, obj):
-    #     return obj.owner.email
+    def get_owner(self, obj):
+        return obj.owner.email
     
     class Meta:
         model = Post
@@ -22,10 +21,10 @@ class PostCreateSerializer (serializers.ModelSerializer):
 
 '''게시글 상세보기 시리얼라이저 -> 작성자, 타이틀, 이미지, 내용'''
 class PostDetailSerializer (serializers.ModelSerializer):
-    # owner = serializers.SerializerMethodField()
+    owner = serializers.SerializerMethodField()
     
-    # def get_owner(self, obj):
-        # return obj.owner.email
+    def get_owner(self, obj):
+        return obj.owner.email
     class Meta:
         model = Post
         fields = ("owner", "title", "image", "content")

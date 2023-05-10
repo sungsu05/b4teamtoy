@@ -1,10 +1,9 @@
 from django.db import models
-# from users.models import User
+from users.models import User
 
 # 게시글 모델
 class Post(models.Model):
-    owner = models.CharField(max_length=50)
-    #owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
     content = models.TextField()
     image = models.ImageField(blank=True, upload_to='%Y/%m/')

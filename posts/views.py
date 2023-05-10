@@ -19,13 +19,15 @@ class PostView(APIView):
     # 로그인한 사람만! 
     def post(self, request):
         '''게시글 작성'''
-        # 지금은 익명작성 가능 -> 후에 로그인한 사람만 가능하게 수정하기 
-        serializer = PostCreateSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(owner=request.user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        if not request.user.is_authenticated:
+            return Response("로그인이 필요합니다.", status=status.HTTP_401_UNAUTHORIZED)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer = PostCreateSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save(owner=request.user)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # 게시글 상세보기, 수정, 삭제 뷰(get, put, delete) - 본인만 가능
 class PostDetailView(APIView):

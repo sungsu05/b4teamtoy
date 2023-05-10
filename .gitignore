@@ -1,6 +1,4 @@
 migrations
-venv
-.env
 # Created by https://www.toptal.com/developers/gitignore/api/django,windows,macos,python,pycharm,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=django,windows,macos,python,pycharm,visualstudiocode
 
@@ -171,7 +169,7 @@ cython_debug/
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#.idea/
+.idea/
 
 ### macOS ###
 # General
