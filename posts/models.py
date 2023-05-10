@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import
+from users.models import User
 
 # 게시글 모델
 class Post(models.Model):
