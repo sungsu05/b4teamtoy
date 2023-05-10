@@ -14,4 +14,3 @@ class Post(models.Model):
         return str(self.title)
  
 # 좋아요 모델 추가
-
