@@ -32,10 +32,10 @@ class CommentView(APIView):
 
 
 #@@@@@@@@@@@@@@@@댓글 수정@@@@@@@@@@@@@@@@ 
-class CommnentDetailView(APIView):
+class CommentDetailView(APIView):
     def put(self, request, post_id, comment_id):
         comment = get_object_or_404(Comment, id=comment_id)
-        if request.user == comment.user:
+        if request.user == comment.owner:
             serializer = CommentCreateSerializer(comment, data=request.data)
             if serializer.is_valid():
                 serializer.save()
@@ -54,7 +54,7 @@ class CommnentDetailView(APIView):
     # @@@@@@@@@@@@@@@@댓글 삭제@@@@@@@@@@@@@@@@  
     def delete(self, request, post_id, comment_id):
         comment = get_object_or_404(Comment, id=comment_id)
-        if request.user == comment.user:
+        if request.user == comment.owner:
             comment.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
