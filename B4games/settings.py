@@ -46,6 +46,21 @@ INSTALLED_APPS = [
     'comments',
 ]
 
+
+REST_FRAMEWORK = {
+
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+
+}
+
+# Pay Load 재정의 : https://django-rest-framework-simplejwt.readthedocs.io/en/latest/customizing_token_claims.html
+SIMPLE_JWT = {
+    "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.MyTokenObtainPairSerializer",
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -55,7 +70,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
 ROOT_URLCONF = 'B4games.urls'
 
 TEMPLATES = [

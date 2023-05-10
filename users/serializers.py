@@ -1,7 +1,9 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
-from dataclasses import field
+
 from users.models import User
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,28 +21,28 @@ class UserSerializer(serializers.ModelSerializer):
                 },
             },
         }
-    # def validate(self, attrs):
-    #     return super().validate(attrs) sereializer 사용해서 변경
-    
     def create(self, validated_data):
         user = super().create(validated_data)
-        password = user.password
-        user.set_password(password)
+
+        # 비밀번호 복호화
+        user.set_password(user.password)
         user.save()
         return user
-    
-    def update(self, validated_data):
-        password = validated_data.pop('password', None)
-        if  password:
-            validated_data['password'] = validated_data.pop('old_password')
-            validated_data['set_password'] = password
-        return validated_data
-    
-    
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-        token['name'] = user.name
 
-        return token
+        # 회원 정보 수정, 오버라이딩
+        def update(self, instance, validated_data):
+            user = super().update(instance, validated_data)
+            # 비밀번호 복호화
+            user.set_password(user.password)
+            user.save()
+            return user
+
+    class ComtomTokenObtainPairSerializer(TokenObtainPairSerializer):
+        @ classmethod
+        def get_token(cls, user):
+            token = super().get_token(user)
+            token['email'] = user.email
+            token['username'] = user.username
+            token['nickname'] = user.nickname
+            token['is_seller'] = user.is_seller
+            return token
