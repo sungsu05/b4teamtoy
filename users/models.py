@@ -48,17 +48,9 @@ class User(AbstractBaseUser):
     email = models.EmailField("이메일 주소", max_length=100,unique = True)
     created_at = models.DateTimeField("가입일", auto_now_add=True)
     updated_at = models.DateTimeField("수정일", auto_now=True)
-    signout_at = models.DateTimeField("탈퇴일", auto_now_add=True)
+    signout_at = models.CharField("탈퇴일", blank=True,max_length=20)
     follow = models.ManyToManyField('self',symmetrical=False,related_name='followers',blank=True)
 
-    # SELLER_CHOICE =(
-    #     # seller or  member
-    #     ('S','판매 회원'),  # 판매 회원
-    #     ('M','일반 회원'), # 일반 회원
-    #     ('S', True),  # 판매 회원
-    #     ('M', False),  # 일반 회원
-    # )
-    # BooleanField에는 CHOICE를 선택하는것은 올바른 방법이 아니다.
     is_seller = models.BooleanField(default=True)
 
     # is_staff에서 해당 값 사용
