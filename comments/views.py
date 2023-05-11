@@ -1,8 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from comments.models import Comment
 from posts.models import Post
+from comments.models import Comment
 from comments.serializers import CommentSerializer,CommentCreateSerializer
 from rest_framework.generics import get_object_or_404
 
@@ -15,17 +15,17 @@ from rest_framework.generics import get_object_or_404
 class CommentView(APIView):
     def get(self, request, post_id):
         posts = Post.objects.get(id=post_id)
-        comments = posts.comment_set.all() # 변수명 수정
+        comments = posts.comment_set.all() 
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, post_id):
-        serializer = CommentCreateSerializer(data=request.data)
+        serializer = CommentCreateSerializer(data=request.data, context={"owner": request.user, "posts_id": post_id})
         if serializer.is_valid():
-            serializer.save(user=request.user, post_id=post_id)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            serializer.save(owner=request.user, posts_id=post_id)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
