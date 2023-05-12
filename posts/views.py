@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from posts.models import Post
 from posts.serializers import PostlistSerializer, PostCreateSerializer, PostDetailSerializer, MyPostSerializer 
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 
 # 게시글 메인, 작성 뷰(get, post)
@@ -76,9 +78,14 @@ class LikeView(APIView):
                 posts.likes.add(request.user)
                 return Response("좋아요를 했습니다.", status=status.HTTP_200_OK)
 
+
 class MyPostListView(APIView):
     def get(self, request, user_id):
         '''내 게시글만 모아보기'''
         posts = Post.objects.filter(owner_id=user_id)
         serializer = MyPostSerializer (posts, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        # if ~~~
+        # else:
+        #     return Response("자신의 페이지만 볼 수 있습니다.", status=status.HTTP_403_FORBIDDEN)
+        # 본인이 아니면 페이지에 접근못하게 하고 싶은데 잘안되네요!!

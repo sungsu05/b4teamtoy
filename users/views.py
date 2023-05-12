@@ -1,54 +1,10 @@
-# from rest_framework.views import APIView
-# from rest_framework.response import Response
-#
-# from django.contrib.auth import authenticate, login, logout
-# from users.models import User
-# from users.serializers import UserSerializer
-#
-# # for Postman testing
-# class UserView(APIView):
-#     def get(self, request):
-#         """ 사용자 정보 return """
-#         user = request.user
-#         return Response(UserSerializer(user.data))
-#
-#     def post(self, request):
-#         """ 회원가입 """
-#
-#         # User.objects.create(**request.data)
-#         serializer = UserSerializer(data=request.data)
-#
-#         if not serializer.is_valid():
-#             return Response({"error": serializer.errors}, status=400)
-#         serializer.save()
-#
-#         return Response({"message": "user post"})
-#
-#     def put(self, request):
-#         """ 사용자 정보 수정 """
-#         return Response({"message": "user put"})
-#
-#     def delete(self, request):
-#         """ 회원 탈퇴 """
-#         return Response({"message": "user delete"})
-#
-# class UserLoginView(APIView):
-#     def post(self, request):
-#         user = authenticate(request, **request.data)
-#         if not user:
-#             return Response({"error": "유효하지 않은 계정"})
-#
-#         login(request, user)
-#         return Response({"message": "로그인 성공"})
-
-
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
 from .models import User
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import UserSerializer,ComtomTokenObtainPairSerializer
+from .serializers import (UserSerializer,ComtomTokenObtainPairSerializer)
 from datetime import datetime
 
 # 회원 가입
@@ -67,6 +23,7 @@ class SignUp(APIView):
 class UserView(APIView):
     # 회원 정보 읽기
     def get(self,request,user_id):
+
         owner = get_object_or_404(User,id=user_id)
         serializer = UserSerializer(owner)
         return Response(serializer.data,status=status.HTTP_200_OK)
@@ -87,14 +44,13 @@ class UserView(APIView):
         else:
             return Response({"error":"권한이 없습니다."},status=status.HTTP_400_BAD_REQUEST)
 
-    # 회원 정보 삭제
+    # 휴면 계정으로 전환
     def delete(self,request,user_id):
         owner = get_object_or_404(User,id=user_id)
         if request.user == owner:
             owner = get_object_or_404(User, id=user_id)
             now = datetime.now()
             now = now.strftime("%Y-%m-%d")
-
             owner.is_active = False
             owner.signout_at = now
             owner.save()
