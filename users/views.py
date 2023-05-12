@@ -6,7 +6,7 @@ from .models import User
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import (UserSerializer,ComtomTokenObtainPairSerializer,ReadUserSerializer,
                           ReadProfileSerializer,UpdateProfileSerializer,GetFollowInfoSerializer)
-from datetime import datetime
+from django.core.files.storage import FileSystemStorage
 
 # 회원 가입
 class SignUp(APIView):
@@ -16,8 +16,7 @@ class SignUp(APIView):
             serializer.save()
 
             # 직렬화 데이터 추출 : https://stackoverflow.com/questions/47714516/how-to-get-field-value-in-the-serializer
-            user_name = serializer.validated_data.get('username')
-            return Response({'message':f'{user_name}님 환영합니다.'},status=status.HTTP_201_CREATED)
+            return Response({'message':f'가입을 축하합니다.'},status=status.HTTP_201_CREATED)
         else:
             return Response({'message':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
 
@@ -50,10 +49,7 @@ class UserView(APIView):
         owner = get_object_or_404(User,id=user_id)
         if request.user == owner:
             owner = get_object_or_404(User, id=user_id)
-            now = datetime.now()
-            now = now.strftime("%Y-%m-%d")
             owner.is_active = False
-            owner.signout_at = now
             owner.save()
             return Response({"message":"휴면 계정으로 전환되었습니다."},status=status.HTTP_200_OK)
         else:
