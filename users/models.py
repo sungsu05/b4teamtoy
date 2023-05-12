@@ -41,7 +41,7 @@ class User(AbstractBaseUser):
     nickname = models.CharField("닉네임", max_length=20,unique = True)
     password = models.CharField("비밀번호", max_length=128) # max?
     email = models.EmailField("이메일 주소", max_length=100,unique = True)
-    image = models.ImageField(blank=True, upload_to="%Y/%m")
+    image = models.ImageField(upload_to="%Y/%m",blank=True)
     status_message = models.CharField(max_length=50,default="아직 상태 메시지가 없습니다.")
     is_seller = models.BooleanField(default=True)
     created_at = models.DateTimeField("가입일", auto_now_add=True)
@@ -56,10 +56,10 @@ class User(AbstractBaseUser):
 
     # id로 사용 할 필드 지정.
     # 로그인 시 USERNAME_FIELD에 설정 된 필드와 password가 사용된다.\
-    USERNAME_FIELD = 'eamil'
+    USERNAME_FIELD = 'email'
 
     # user를 생성할 때 입력받은 필드 지정
-    REQUIRED_FIELDS = ['username','email','is_seller']
+    REQUIRED_FIELDS = ['is_seller','nickname']
     objects = UserManager()  # custom user 생성 시 필요
 
     def __str__(self):

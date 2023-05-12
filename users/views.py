@@ -6,7 +6,7 @@ from .models import User
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import (UserSerializer,ComtomTokenObtainPairSerializer,ReadUserSerializer,
                           ReadProfileSerializer,UpdateProfileSerializer,GetFollowInfoSerializer)
-from datetime import datetime
+from django.core.files.storage import FileSystemStorage
 
 # 회원 가입
 class SignUp(APIView):
