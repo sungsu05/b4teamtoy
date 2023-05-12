@@ -50,3 +50,27 @@ class ComtomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['nickname'] = user.nickname
         token['is_seller'] = user.is_seller
         return token
+
+
+class GetFollowInfoSerializer(serializers.ModelSerializer):
+    followers = serializers.StringRelatedField(many=True)
+    followings = serializers.StringRelatedField(many=True)
+    class Meta:
+        model = User
+        fields = ('followings','followers',)
+
+class ReadProfileSerializer(serializers.ModelSerializer):
+
+    followers = serializers.StringRelatedField(many=True)
+    followings = serializers.StringRelatedField(many=True)
+
+    class Meta:
+        model = User
+        fields = ('nickname','email','followings','followers','is_seller','image','status_message')
+
+
+class UpdateProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('image','status_message',)
+        # exclude = ("owner",)

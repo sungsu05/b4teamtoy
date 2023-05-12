@@ -51,9 +51,14 @@ class User(AbstractBaseUser):
     signout_at = models.CharField("탈퇴일", blank=True,max_length=20)
     is_seller = models.BooleanField(default=True)
     followings = models.ManyToManyField('self', symmetrical=False, related_name='followers', blank=True)
+
+    image = models.ImageField(blank=True, upload_to="%Y/%m")
+    status_message = models.CharField(max_length=50,default="아직 상태 메시지가 없습니다.")
+
     # is_staff에서 해당 값 사용
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
+
 
     # id로 사용 할 필드 지정.
     # 로그인 시 USERNAME_FIELD에 설정 된 필드와 password가 사용된다.\

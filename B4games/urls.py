@@ -8,7 +8,6 @@ urlpatterns = [
     path('api/users/', include('users.urls')),
     path('api/posts/', include('posts.urls')),
     path('api/comments/', include('comments.urls')),
-    path('api/profiles/',include('profiles.urls'))
     # path('api/posts/<int:post_id>/comment/', include('comments.urls')),영주님의 경로잡기 
 ]
 
