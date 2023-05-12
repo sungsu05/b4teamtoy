@@ -45,7 +45,7 @@ class PostDetailView(APIView):
     def put(self, request, post_id):
         '''게시글 수정'''
         posts = get_object_or_404(Post, id=post_id)
-        if request.user == posts.owner: # 아마 유저인증과정ㅇ ㅓㅄ어도 토큰만으로 될 수도 있는지? 아닌지. 호기심! 
+        if request.user == posts.owner: # 인증 과정 없이 토큰만으로 될 수도 있는지? 아닌지. 호기심! 
             serializer = PostCreateSerializer(posts, data=request.data)
             if serializer.is_valid():
                 serializer.save()
@@ -67,7 +67,7 @@ class PostDetailView(APIView):
 class LikeView(APIView):
     def post(self, request, post_id):
         posts = get_object_or_404(Post, id=post_id)
-        # 로그인 인증 추가
+        '''좋아요 예외 처리'''
         if not request.user.is_authenticated:
             return Response("로그인이 필요합니다.", status=status.HTTP_401_UNAUTHORIZED)
         else:
