@@ -37,12 +37,12 @@ class UserSerializer(serializers.ModelSerializer):
             user.save()
             return user
 
-    class ComtomTokenObtainPairSerializer(TokenObtainPairSerializer):
-        @ classmethod
-        def get_token(cls, user):
-            token = super().get_token(user)
-            token['email'] = user.email
-            token['username'] = user.username
-            token['nickname'] = user.nickname
-            token['is_seller'] = user.is_seller
-            return token
+class ComtomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @ classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['email'] = user.email
+        token['username'] = user.username
+        token['nickname'] = user.nickname
+        token['is_seller'] = user.is_seller
+        return token
