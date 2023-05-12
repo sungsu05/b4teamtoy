@@ -49,10 +49,8 @@ class User(AbstractBaseUser):
     created_at = models.DateTimeField("가입일", auto_now_add=True)
     updated_at = models.DateTimeField("수정일", auto_now=True)
     signout_at = models.CharField("탈퇴일", blank=True,max_length=20)
-    followings = models.ManyToManyField('self', symmetrical=False, related_name='followers', blank=True)
-
     is_seller = models.BooleanField(default=True)
-
+    followings = models.ManyToManyField('self', symmetrical=False, related_name='followers', blank=True)
     # is_staff에서 해당 값 사용
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)

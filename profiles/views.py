@@ -3,7 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
 from .models import Profile
-from .serializers import (ReadProfileSerializer,UpdateProfileSerializer)
+from users.models import User
+from .serializers import (ReadProfileSerializer,UpdateProfileSerializer,GetFollowInfoSerializer)
 
     # 프로필 기능에 필요한것
     # 1. 사용자 정보 출력 - 시리얼 라이저 사용 ,
@@ -24,20 +25,44 @@ from .serializers import (ReadProfileSerializer,UpdateProfileSerializer)
 
     # follow 기능, post? put?
 
-#
+
 # class ProfileView(APIView):
-#     def get(self,request):
-#         pass
+#     def get(self, request, user_id):
+#         owner = get_object_or_404(User, id=user_id)
+#         serializer = ReadProfileSerializer(owner)
+#         return Response(serializer, status=status.HTTP_200_OK)
 
 class UpdateProfileView(APIView):
-    # owner의 프로필 읽기
+    # owner의 프로필 읽기 (public)
     def get(self,request,user_id):
-        pass
+        owner = get_object_or_404(User,id=user_id)
+        serializer = ReadProfileSerializer(owner)
+        return Response(serializer.data,status=status.HTTP_200_OK)
 
     # owner를 팔로우,언팔로우
     def post(self,request,user_id):
-        pass
+        # 로그인 인증 테스트 필요
+        if not request.user.is_authenticated:
+            return Response("로그인이 필요합니다.", status=status.HTTP_401_UNAUTHORIZED)
+        owner = get_object_or_404(User,id=user_id)
+        if request.user in owner.followers.all():
+            owner.followers.remove(request.user)
+            return Response("unfollow",status=status.HTTP_200_OK)
+        else:
+            owner.followers.add(request.user)
+            return Response("follow",status=status.HTTP_200_OK)
 
     # owner가 자신의 프로필을 수정
     def put(self,request,user_id):
-        pass
+        owner = get_object_or_404(User, id=user_id)
+        if request.user == owner:
+            serializer = UpdateProfileSerializer(owner, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                update_profile_info = ReadProfileSerializer(owner)
+                return Response(update_profile_info.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"error": "권한이 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
+
