@@ -8,7 +8,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 class ReadUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username','nickname','email','is_seller',)
+        fields = ('nickname','email','is_seller',)
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -46,7 +46,6 @@ class ComtomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
         token['email'] = user.email
-        token['username'] = user.username
         token['nickname'] = user.nickname
         token['is_seller'] = user.is_seller
         return token
@@ -73,4 +72,3 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('image','status_message',)
-        # exclude = ("owner",)
