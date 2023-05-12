@@ -54,12 +54,11 @@ class UserView(APIView):
             owner.is_active = False
             owner.signout_at = now
             owner.save()
-            return Response({"message":"휴먼 계정으로 전환되었습니다."},status=status.HTTP_200_OK)
+            return Response({"message":"휴면 계정으로 전환되었습니다."},status=status.HTTP_200_OK)
         else:
             return Response({"error":"권한이 없습니다."},status=status.HTTP_400_BAD_REQUEST)
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = ComtomTokenObtainPairSerializer
-
 
 
