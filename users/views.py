@@ -61,4 +61,3 @@ class UserView(APIView):
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = ComtomTokenObtainPairSerializer
 
-
