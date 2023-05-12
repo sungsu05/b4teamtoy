@@ -9,7 +9,7 @@ class Post(models.Model):
     image = models.ImageField(blank=True, upload_to='%Y/%m/')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    likes = models.ManyToManyField(User, related_name="like_posts")
+    likes = models.ManyToManyField(User, related_name="like_posts", blank=True)
     # 좋아요 모델 추가
     
     def __str__(self):
