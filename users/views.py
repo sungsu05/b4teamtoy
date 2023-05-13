@@ -6,10 +6,20 @@ from .models import User
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import (UserSerializer,ComtomTokenObtainPairSerializer,ReadUserSerializer,
                           ReadProfileSerializer,UpdateProfileSerializer,GetFollowInfoSerializer)
-from django.core.files.storage import FileSystemStorage
-
+from django.core.mail import EmailMessage
+import random
 # 회원 가입
 class SignUp(APIView):
+    def send_mail(self,email):
+        code = "".join([str(random.randrange(0, 10)) for i in range(6)])
+        title = "B4GAMES 가입 인증 코드 발송"
+        content = f"인증 코드 = {code}"
+        mail = EmailMessage(title,content,to=[email])
+        mail.send()
+
+        # 올바른 이메일로 발송했는지 검증 절차 필요
+        return code
+
     def check_password(self,password):
         check = [
             lambda element: all(x.isdigit() or x.islower() or x.isupper() or (x in ['!', '@', '#', '$', '%', '^', '&', '*', '_']) for x in element),
@@ -27,18 +37,36 @@ class SignUp(APIView):
         return True
 
     def post(self,request):
-
         if not self.check_password(request.data['password']):
             return Response({'error':'비밀번호가 올바르지 않습니다.'},status=status.HTTP_401_UNAUTHORIZED)
 
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
+            # email로 인증 코드 발송, owner의 데이터베이스에 인증 코드 저장
             serializer.save()
+            email = serializer.validated_data.get('email')
+            owner = get_object_or_404(User,email=email)
+            owner.auth_code = self.send_mail(email)
 
-            # 직렬화 데이터 추출 : https://stackoverflow.com/questions/47714516/how-to-get-field-value-in-the-serializer
+            # if owner.auth_code == None:
+            #     owner.delete()
+            #     return Response({'error':"이메일 정보가 올바르지 않습니다."}, status=status.HTTP_401_UNAUTHORIZED)
+
+            owner.save()
+
             return Response({'message':f'가입을 축하합니다.'},status=status.HTTP_201_CREATED)
         else:
             return Response({'message':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self,request):
+        owner = get_object_or_404(User, email=request.data['email'])
+        print(owner.auth_code)
+        if owner.auth_code == request.data['auth_code']:
+            owner.is_active = True
+            owner.save()
+            return Response({"message":"인증되셨습니다."}, status=status.HTTP_200_OK)
+
+        return Response({"error":"인증 메일이 올바르지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserView(APIView):
     # 회원 정보 읽기

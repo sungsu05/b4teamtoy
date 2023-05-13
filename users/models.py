@@ -64,16 +64,17 @@ class User(AbstractBaseUser):
     email = models.EmailField("이메일 주소", max_length=100,unique = True)
     image = models.ImageField(upload_to="%Y/%m",blank=True)
     status_message = models.CharField(max_length=50,default="아직 상태 메시지가 없습니다.")
-    is_seller = models.BooleanField(default=True)
     created_at = models.DateTimeField("가입일", auto_now_add=True)
     updated_at = models.DateTimeField("수정일", auto_now=True)
     followings = models.ManyToManyField('self', symmetrical=False, related_name='followers', blank=True)
     auth_code = models.CharField(max_length=20,blank=True)
 
-
-    # is_staff에서 해당 값 사용
-    is_active = models.BooleanField(default=True)
+    # 판매자 권한
+    is_seller = models.BooleanField(default=True)
+    # 관리자 권한
     is_admin = models.BooleanField(default=False)
+    # 계정 활성화
+    is_active = models.BooleanField(default=False)
 
 
     # id로 사용 할 필드 지정.
