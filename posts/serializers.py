@@ -6,7 +6,7 @@ class PostlistSerializer (serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
     
     def get_owner(self, obj):
-        return obj.owner.nickname
+        return obj.owner.username
     
     class Meta:
         model = Post
@@ -24,7 +24,7 @@ class PostDetailSerializer (serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
     
     def get_owner(self, obj):
-        return obj.owner.nickname
+        return obj.owner.username
     class Meta:
         model = Post
         fields = ("owner", "title", "image", "content")

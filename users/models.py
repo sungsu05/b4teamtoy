@@ -25,11 +25,11 @@ class UserManager(BaseUserManager):
                 return False
         return True
 
-    def create_user(self,email,nickname,is_seller,password=None):
+    def create_user(self,email,username,is_seller,password=None):
 
         if not self.check_password(password):
             raise ValueError('비밀번호가 올바르지 않습니다.')
-        elif not nickname:
+        elif not username:
             raise ValueError('사용자 별명은 필수 입력 사항 입니다.')
         elif not email:
             raise ValueError('사용자 이메일은 필수 입력 사항 입니다.')
@@ -38,7 +38,7 @@ class UserManager(BaseUserManager):
 
         user = self.model(
             email=self.normalize_email(email),
-            nickname=nickname,
+            username=username,
             is_seller=is_seller,
         )
         user.set_password(password)
@@ -46,20 +46,20 @@ class UserManager(BaseUserManager):
         return user
 
     # python manage.py createsuperuser 사용 시 해당 함수가 사용됨
-    def create_superuser(self,email,nickname,is_seller,password=None):
+    def create_superuser(self,email,username,is_seller,password=None):
         user = self.create_user(
             email,
             password=password,
-            nickname=nickname,
+            username=username,
             is_seller=is_seller,
         )
         user.is_admin = True
         user.save(using=self._db)
         return user
 
-# name, password, nickname, email, follow, created_at, updated_at, signout_at, is_active, is_seller
+# name, password, username, email, follow, created_at, updated_at, signout_at, is_active, is_seller
 class User(AbstractBaseUser):
-    nickname = models.CharField("닉네임", max_length=20,unique = True)
+    username = models.CharField("닉네임", max_length=20,unique = True)
     password = models.CharField("비밀번호", max_length=128) # max?
     email = models.EmailField("이메일 주소", max_length=100,unique = True)
     image = models.ImageField(upload_to="%Y/%m",blank=True)
@@ -68,6 +68,7 @@ class User(AbstractBaseUser):
     created_at = models.DateTimeField("가입일", auto_now_add=True)
     updated_at = models.DateTimeField("수정일", auto_now=True)
     followings = models.ManyToManyField('self', symmetrical=False, related_name='followers', blank=True)
+    auth_code = models.CharField(max_length=20,blank=True)
 
 
     # is_staff에서 해당 값 사용
@@ -80,7 +81,7 @@ class User(AbstractBaseUser):
     USERNAME_FIELD = 'email'
 
     # user를 생성할 때 입력받은 필드 지정
-    REQUIRED_FIELDS = ['is_seller','nickname']
+    REQUIRED_FIELDS = ['is_seller','username']
     objects = UserManager()  # custom user 생성 시 필요
 
     def __str__(self):

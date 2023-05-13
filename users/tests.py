@@ -10,7 +10,6 @@ class SignupAPIViewTest(APITestCase):
     def test_singup(self):
         url = reverse("sign_up")
         user_data = {
-            'nickname': 'son',
             'password': '123',
             'username': 'SungSuSon',
             'email': 'test@naver.com',
@@ -23,10 +22,8 @@ class SignupAPIViewTest(APITestCase):
     def test_singup_fail(self):
         url = reverse("sign_up")
         user_data = {
-            'nickname': 'son',
             'password': '123',
             'username': 'SungSuSon',
-
             'is_seller': False
         }
         response = self.client.post(url, user_data)
@@ -36,16 +33,15 @@ class SignupAPIViewTest(APITestCase):
 class LoginUserTest(APITestCase):
     def setUp(self):
         self.data = {
-            'nickname': 'Rumor',
             'password': '123',
             'username': 'SungSuSon',
             'email': 'test@naver.com',
             'is_seller': True
         }
 
-        # def create_user(self, email, username, nickname, is_seller, password=None):
+        # def create_user(self, email, username, is_seller, password=None):
         # 데이터 넘기는 순서 참고.
-        self.user = User.objects.create_user('test@naver.com','SungSuSon','Rumor',True,'123')
+        self.user = User.objects.create_user('test@naver.com','Rumor',True,'123')
 
     def test_login(self):
         response = self.client.post(reverse('token_obtain_pair'),self.data)
@@ -57,16 +53,15 @@ class LoginUserTest(APITestCase):
 class UserAPIViewTest(APITestCase):
     def setUp(self):
         self.data = {
-            'nickname': 'Rumor',
             'password': '123',
             'username': 'SungSuSon',
             'email': 'test@naver.com',
             'is_seller': True
         }
 
-        # def create_user(self, email, username, nickname, is_seller, password=None):
+        # def create_user(self, email, username, is_seller, password=None):
         # 데이터 넘기는 순서 참고.
-        self.user = User.objects.create_user('test@naver.com','SungSuSon','Rumor',True,'123')
+        self.user = User.objects.create_user('test@naver.com','Rumor',True,'123')
         self.response = self.client.post(reverse('token_obtain_pair'),self.data)
 
     # # 회원 정보 수정
@@ -75,7 +70,6 @@ class UserAPIViewTest(APITestCase):
     #     url = reverse('user_view',args=[self.user.id])
     #     # url = reverse('user_view')
     #     self.data = {
-    #         'nickname': '초능력 맛',
     #         'password': '12345',
     #         'username': '손성수',
     #         'email': 'rumor@naver.com',
