@@ -10,7 +10,27 @@ from django.core.files.storage import FileSystemStorage
 
 # 회원 가입
 class SignUp(APIView):
+    def check_password(self,password):
+        check = [
+            lambda element: all(x.isdigit() or x.islower() or x.isupper() or (x in ['!', '@', '#', '$', '%', '^', '&', '*', '_']) for x in element),
+            # 요소 하나 하나를 순환하며 숫자,소문자,대문자,지정된 특수문자 제외한 요소가 있을경우 False
+            lambda element: len(element) == len(element.replace(" ", "")),
+            # 공백이 포함 되어 있을 경우 False
+            lambda element: True if (len(element) > 7 and len(element) < 21) else False,
+            # 전달된 값의 개수가 8~20 사이일 경우 True
+            lambda element: any(x.islower() or x.isupper() for x in element),
+            # 요소 하나하나를 순환하며, 요소중 대문자 또는 소문자가 있어야함(숫자로만 가입 불가능)
+        ]
+        for i in check:
+            if not i(password):
+                return False
+        return True
+
     def post(self,request):
+
+        if not self.check_password(request.data['password']):
+            return Response({'error':'비밀번호가 올바르지 않습니다.'},status=status.HTTP_401_UNAUTHORIZED)
+
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()

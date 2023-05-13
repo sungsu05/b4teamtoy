@@ -3,11 +3,32 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 # custom user model 사용 시 UserManager 클래스와 create_user, create_superuser 함수가 정의되어 있어야 함
 
+
+
+
 class UserManager(BaseUserManager):
+
+    def check_password(self,password):
+        check = [
+            lambda element: all(
+                x.isdigit() or x.islower() or x.isupper() or (x in ['!', '@', '#', '$', '%', '^', '&', '*', '_']) for x in element),
+            # 요소 하나 하나를 순환하며 숫자,소문자,대문자,지정된 특수문자 제외한 요소가 있을경우 False
+            lambda element: len(element) == len(element.replace(" ", "")),
+            # 공백이 포함 되어 있을 경우 False
+            lambda element: True if (len(element) > 7 and len(element) < 21) else False,
+            # 전달된 값의 개수가 8~20 사이일 경우 True
+            lambda element: any(x.islower() or x.isupper() for x in element),
+
+        ]
+        for i in check:
+            if not i(password):
+                return False
+        return True
+
     def create_user(self,email,nickname,is_seller,password=None):
 
-        if not password:
-            raise ValueError('사용자 비밀번호는 필수 입력 사항 입니다.')
+        if not self.check_password(password):
+            raise ValueError('비밀번호가 올바르지 않습니다.')
         elif not nickname:
             raise ValueError('사용자 별명은 필수 입력 사항 입니다.')
         elif not email:

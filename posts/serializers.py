@@ -6,11 +6,11 @@ class PostlistSerializer (serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
     
     def get_owner(self, obj):
-        return obj.owner.username
+        return obj.owner.nickname
     
     class Meta:
         model = Post
-        fields = ("owner", "title", "image")
+        fields = ("pk","owner", "title", "image","content")
 
 '''게시글 작성, 수정용 시리얼라이저 -> 타이틀, 이미지, 내용'''
 class PostCreateSerializer (serializers.ModelSerializer):
@@ -24,7 +24,7 @@ class PostDetailSerializer (serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
     
     def get_owner(self, obj):
-        return obj.owner.username
+        return obj.owner.nickname
     class Meta:
         model = Post
         fields = ("owner", "title", "image", "content")
