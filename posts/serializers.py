@@ -27,7 +27,7 @@ class PostDetailSerializer (serializers.ModelSerializer):
         return obj.owner.email
     class Meta:
         model = Post
-        fields = ("owner", "title", "image", "content")
+        fields = ("pk", "owner", "title", "image", "content")
 
 '''마이페이지 내가 쓴 게시글만 가져오는 시리얼라이저 -> 타이틀, 이미지, 내용'''
 class MyPostSerializer (serializers.ModelSerializer):

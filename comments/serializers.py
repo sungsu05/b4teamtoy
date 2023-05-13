@@ -9,7 +9,7 @@ class CommentSerializer(serializers.ModelSerializer):
  
     
     def get_owner(self, obj):
-        return obj.owner.username
+        return obj.owner.email
     
     class Meta:
         model = Comment
