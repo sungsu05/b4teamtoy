@@ -4,11 +4,6 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 
-class EmailAuthenticationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('email','auth_code')
-
 class ReadUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
