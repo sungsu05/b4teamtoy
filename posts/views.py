@@ -3,7 +3,9 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from posts.models import Post
-from posts.serializers import PostlistSerializer, PostCreateSerializer, PostDetailSerializer
+from posts.serializers import PostlistSerializer, PostCreateSerializer, PostDetailSerializer, MyPostSerializer 
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 
 # 게시글 메인, 작성 뷰(get, post)
@@ -21,6 +23,9 @@ class PostView(APIView):
         '''게시글 작성'''
         if not request.user.is_authenticated:
             return Response("로그인이 필요합니다.", status=status.HTTP_401_UNAUTHORIZED)
+        # is_seller추가 
+        if not request.user.is_seller:
+            return Response("판매자만 글 작성이 가능합니다.", status=status.HTTP_401_UNAUTHORIZED)
         else:
             serializer = PostCreateSerializer(data=request.data)
             if serializer.is_valid():
@@ -40,7 +45,7 @@ class PostDetailView(APIView):
     def put(self, request, post_id):
         '''게시글 수정'''
         posts = get_object_or_404(Post, id=post_id)
-        if request.user == posts.owner:
+        if request.user == posts.owner: # 인증 과정 없이 토큰만으로 될 수도 있는지? 아닌지. 호기심! 
             serializer = PostCreateSerializer(posts, data=request.data)
             if serializer.is_valid():
                 serializer.save()
@@ -58,3 +63,29 @@ class PostDetailView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response("작성자만 삭제할 수 있습니다.", status=status.HTTP_403_FORBIDDEN)
+        
+class LikeView(APIView):
+    def post(self, request, post_id):
+        posts = get_object_or_404(Post, id=post_id)
+        '''좋아요 예외 처리'''
+        if not request.user.is_authenticated:
+            return Response("로그인이 필요합니다.", status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            if request.user in posts.likes.all():
+                posts.likes.remove(request.user)
+                return Response("좋아요를 취소했습니다.", status=status.HTTP_200_OK)
+            else:
+                posts.likes.add(request.user)
+                return Response("좋아요를 했습니다.", status=status.HTTP_200_OK)
+
+
+class MyPostListView(APIView):
+    def get(self, request, user_id):
+        '''내 게시글만 모아보기'''
+        posts = Post.objects.filter(owner_id=user_id)
+        serializer = MyPostSerializer (posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        # if ~~~
+        # else:
+        #     return Response("자신의 페이지만 볼 수 있습니다.", status=status.HTTP_403_FORBIDDEN)
+        # 본인이 아니면 페이지에 접근못하게 하고 싶은데 잘안되네요!!

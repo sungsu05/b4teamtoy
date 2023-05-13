@@ -3,19 +3,22 @@ from comments.models import Comment
 
 
 
+
+class CommentSerializer(serializers.ModelSerializer):
+    owner = serializers.SerializerMethodField()
+ 
+    
+    def get_owner(self, obj):
+        return obj.owner.email
+    
+    class Meta:
+        model = Comment
+        fields = "__all__"   
+
 class CommentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = '__all__'
-
-class CommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
-        fields = '__all__'
-
-class CommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
         fields = ("content",)
+    
 
 
