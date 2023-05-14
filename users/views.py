@@ -39,7 +39,7 @@ class AuthFuntion():
         return True
 
 
-class SignUp(APIView,AuthFuntion):
+class SignUp(APIView,AuthFunction):
     def send_mail(self,email):
         code = "".join([str(random.randrange(0, 10)) for i in range(6)])
         title = "B4GAMES 가입 인증 코드 발송"
