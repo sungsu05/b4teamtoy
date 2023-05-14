@@ -51,9 +51,10 @@ class UserManager(BaseUserManager):
             email,
             password=password,
             username=username,
-            is_seller=is_seller,
+            is_seller = is_seller
         )
         user.is_admin = True
+        user.is_active = True
         user.save(using=self._db)
         return user
 
@@ -70,7 +71,7 @@ class User(AbstractBaseUser):
     auth_code = models.CharField(max_length=20,blank=True)
 
     # 판매자 권한
-    is_seller = models.BooleanField(default=True)
+    is_seller = models.BooleanField(default=False)
     # 관리자 권한
     is_admin = models.BooleanField(default=False)
     # 계정 활성화
