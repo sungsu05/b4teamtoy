@@ -13,8 +13,13 @@ import random
 # 회원 가입
 
 
+<<<<<<< HEAD
 class AuthFuntion():
     def send_mail(self, email):
+=======
+class AuthFunction():
+    def send_mail(self,email):
+>>>>>>> 9d1998601a6fde37d7669031b8f7a78a5582ed1e
         code = "".join([str(random.randrange(0, 10)) for i in range(6)])
         title = "B4GAMES 가입 인증 코드 발송"
         content = f"인증 코드 = {code}"
@@ -43,8 +48,13 @@ class AuthFuntion():
         return True
 
 
+<<<<<<< HEAD
 class SignUp(APIView, AuthFuntion):
     def send_mail(self, email):
+=======
+class SignUp(APIView,AuthFunction):
+    def send_mail(self,email):
+>>>>>>> 9d1998601a6fde37d7669031b8f7a78a5582ed1e
         code = "".join([str(random.randrange(0, 10)) for i in range(6)])
         title = "B4GAMES 가입 인증 코드 발송"
         content = f"인증 코드 = {code}"
@@ -103,8 +113,12 @@ class SignUp(APIView, AuthFuntion):
 
         return Response({"error": "인증 코드가 올바르지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
 
+<<<<<<< HEAD
 
 class UserView(APIView, AuthFuntion):
+=======
+class UserView(APIView,AuthFunction):
+>>>>>>> 9d1998601a6fde37d7669031b8f7a78a5582ed1e
     # 회원 정보 읽기
     def get(self, request, user_id):
         owner = get_object_or_404(User, id=user_id)
@@ -188,6 +202,7 @@ class ProfileView(APIView):
         else:
             return Response({"error": "권한이 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
 
+<<<<<<< HEAD
 
 class GetAuthCode(APIView, AuthFuntion):
     def post(self, request):
@@ -196,3 +211,12 @@ class GetAuthCode(APIView, AuthFuntion):
         owner.save()
         print(owner.auth_code)
         return Response({"message": "인증 메일을 발송 했습니다."}, status=status.HTTP_200_OK)
+=======
+class GetAuthCode(APIView,AuthFunction):
+    def post(self,request):
+        owner = get_object_or_404(User,email=request.data['email'])
+        owner.auth_code = self.send_mail(owner.email)
+        owner.save()
+        print(owner.auth_code)
+        return Response({"message":"인증 메일을 발송 했습니다."}, status=status.HTTP_200_OK)
+>>>>>>> 9d1998601a6fde37d7669031b8f7a78a5582ed1e
