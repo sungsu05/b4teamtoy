@@ -13,7 +13,7 @@ import random
 # 회원 가입
 
 
-class AuthFuntion():
+class AuthFunction():
     def send_mail(self,email):
         code = "".join([str(random.randrange(0, 10)) for i in range(6)])
         title = "B4GAMES 가입 인증 코드 발송"
@@ -44,7 +44,7 @@ class AuthFuntion():
 
 
 
-class SignUp(APIView,AuthFuntion):
+class SignUp(APIView,AuthFunction):
     def post(self, request):
         if not self.check_password(request.data['password']):
             return Response({'error': '비밀번호가 올바르지 않습니다.'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -75,7 +75,7 @@ class SignUp(APIView,AuthFuntion):
 
         return Response({"error": "인증 코드가 올바르지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
 
-class UserView(APIView, AuthFuntion):
+class UserView(APIView, AuthFunction):
     # 회원 정보 읽기
     def get(self, request, user_id):
         owner = get_object_or_404(User, id=user_id)
@@ -158,7 +158,7 @@ class ProfileView(APIView):
         else:
             return Response({"error": "권한이 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
 
-class GetAuthCode(APIView, AuthFuntion):
+class GetAuthCode(APIView, AuthFunction):
     def post(self, request):
         owner = get_object_or_404(User, email=request.data['email'])
         owner.auth_code = self.send_mail(owner.email)
