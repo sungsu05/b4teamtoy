@@ -1,8 +1,7 @@
 from rest_framework import serializers
 from users.models import User
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
-
+from posts.models import Post
 
 class ReadUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -13,7 +12,6 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = "__all__"
-        
         extra_kwargs = {
             "password": {"write_only": True},
             # 이메일 인증 기능
@@ -61,10 +59,16 @@ class ReadProfileSerializer(serializers.ModelSerializer):
 
     followers = serializers.StringRelatedField(many=True)
     followings = serializers.StringRelatedField(many=True)
+    post_count = serializers.SerializerMethodField()
+
+    def get_post_count(self, obj):
+        return obj.post_set.count()
 
     class Meta:
         model = User
-        fields = ('username','email','followings','followers','is_seller','image','status_message')
+        fields = ('username', 'email', 'followings', 'followers', 'is_seller', 'image', 'status_message','post_count')
+
+
 
 
 class UpdateProfileSerializer(serializers.ModelSerializer):
