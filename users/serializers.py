@@ -74,4 +74,4 @@ class ReadProfileSerializer(serializers.ModelSerializer):
 class UpdateProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('image','status_message',)
+        fields = ('username','image','status_message',)
