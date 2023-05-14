@@ -68,7 +68,6 @@ class SignUp(APIView,AuthFuntion):
 
     def put(self, request):
         owner = get_object_or_404(User, email=request.data['email'])
-        print(owner.auth_code)
         if owner.auth_code == request.data['auth_code']:
             owner.is_active = True
             owner.save()
@@ -89,7 +88,6 @@ class UserView(APIView, AuthFuntion):
             return Response({'error': '비밀번호가 올바르지 않습니다.'}, status=status.HTTP_401_UNAUTHORIZED)
 
         owner = get_object_or_404(User, id=user_id)
-        print(owner.auth_code)
         if not request.data['auth_code'] == owner.auth_code:
             return Response({'error': '인증 코드가 올바르지 않습니다.'}, status=status.HTTP_421_MISDIRECTED_REQUEST)
 
@@ -165,5 +163,4 @@ class GetAuthCode(APIView, AuthFuntion):
         owner = get_object_or_404(User, email=request.data['email'])
         owner.auth_code = self.send_mail(owner.email)
         owner.save()
-        print(owner.auth_code)
         return Response({"message": "인증 메일을 발송 했습니다."}, status=status.HTTP_200_OK)
