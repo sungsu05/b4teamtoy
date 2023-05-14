@@ -11,7 +11,7 @@ import random
 # 회원 가입
 
 
-class AuthFuntion():
+class AuthFunction():
     def send_mail(self,email):
         code = "".join([str(random.randrange(0, 10)) for i in range(6)])
         title = "B4GAMES 가입 인증 코드 발송"
