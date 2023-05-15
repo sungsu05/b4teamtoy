@@ -10,6 +10,7 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     likes = models.ManyToManyField(User, related_name="like_posts", blank=True)
+    price = models.PositiveIntegerField(verbose_name="Price")
     # 좋아요 모델 추가
     
     def __str__(self):
