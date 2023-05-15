@@ -23,12 +23,14 @@ class PostCreateSerializer (serializers.ModelSerializer):
 '''게시글 상세보기 시리얼라이저 -> 작성자, 타이틀, 이미지, 내용'''
 class PostDetailSerializer (serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
-    
+    user_id = serializers.SerializerMethodField()
     def get_owner(self, obj):
         return obj.owner.username
+    def get_user_id(self, obj):
+        return obj.owner.pk
     class Meta:
         model = Post
-        fields = ("pk", "owner", "title", "image", "content", "price")
+        fields = ("pk", "owner", "title", "image", "content", "price","user_id")
 
 '''마이페이지 내가 쓴 게시글만 가져오는 시리얼라이저 -> 타이틀, 이미지, 내용'''
 class MyPostSerializer (serializers.ModelSerializer):
